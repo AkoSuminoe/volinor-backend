@@ -1,8 +1,11 @@
 from allauth.account.models import EmailAddress
+from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html, mark_safe
+
+from accounts.models import ModelImage, ModelLibrary
 
 User = get_user_model()
 
@@ -78,3 +81,68 @@ class CustomUserAdmin(UserAdmin):
     @admin.display(description="")
     def info_card(self, obj):
         return format_html('<div style="{}">{}</div>', _CARD_CSS, _CARD_TEXT)
+
+
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
+
+    def __init__(self, attrs=None):
+        forms.Widget.__init__(self, attrs)
+        self.attrs.setdefault('multiple', True)
+
+    def value_from_datadict(self, data, files, name):
+        return files.getlist(name)
+
+    def value_omitted_from_data(self, _data, _files, _name):
+        return False
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('widget', MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        if isinstance(data, list):
+            return [super().clean(f, initial) for f in data if f]
+        return []
+
+
+class ModelLibraryAdminForm(forms.ModelForm):
+    multiple_images = MultipleFileField(required=False)
+
+    class Meta:
+        model = ModelLibrary
+        fields = '__all__'
+
+
+class ModelImageInline(admin.TabularInline):
+    model = ModelImage
+    extra = 1
+    fields = ('image',)
+
+
+@admin.register(ModelLibrary)
+class ModelLibraryAdmin(admin.ModelAdmin):
+    form = ModelLibraryAdminForm
+    list_display = ('name', 'thumbnail', 'secure_download_link', 'created_at')
+    readonly_fields = ('created_at',)
+    inlines = [ModelImageInline]
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        for image_file in request.FILES.getlist('multiple_images'):
+            ModelImage.objects.create(model=obj, image=image_file)
+
+    @admin.display(description='Önizleme')
+    def thumbnail(self, obj):
+        first = obj.images.first()
+        if first and first.image:
+            return format_html('<img src="{}" style="height:48px;border-radius:4px;">', first.image.url)
+        return '—'
+
+    @admin.display(description='İndir')
+    def secure_download_link(self, obj):
+        return format_html(
+            '<a href="/api/models/{}/download/" target="_blank">⬇ İndir</a>', obj.pk
+        )

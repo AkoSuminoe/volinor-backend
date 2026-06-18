@@ -3,6 +3,8 @@ import threading
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from accounts.models import ModelLibrary
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
@@ -113,3 +115,23 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
 
     def save(self):
         self.set_password_form.save()
+
+
+class ModelLibrarySerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    has_download = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ModelLibrary
+        fields = ['id', 'name', 'description', 'created_at', 'images', 'has_download']
+
+    def get_images(self, obj):
+        request = self.context.get('request')
+        return [
+            request.build_absolute_uri(img.image.url)
+            for img in obj.images.all()
+            if img.image
+        ]
+
+    def get_has_download(self, obj):
+        return bool(obj.download_file or obj.external_link)
