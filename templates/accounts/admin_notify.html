@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#07080d;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#07080d;padding:48px 20px;">
+    <tr><td align="center">
+      <table width="580" cellpadding="0" cellspacing="0" style="background:#0d0f1a;border:1px solid #1c2136;border-radius:12px;overflow:hidden;">
+
+        <tr>
+          <td style="background:linear-gradient(135deg,#0b1628 0%,#111828 100%);padding:32px 40px;border-bottom:1px solid rgba(0,212,255,0.12);">
+            <p style="margin:0 0 6px;font-size:10px;letter-spacing:5px;color:#00c4e8;text-transform:uppercase;font-weight:600;">VOLINOR — SİSTEM BİLDİRİMİ</p>
+            <h1 style="margin:0;font-size:20px;font-weight:600;color:#dde3f0;letter-spacing:0.5px;">Yeni Kullanıcı Onay Talebi</h1>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:36px 40px;">
+            <p style="margin:0 0 6px;font-size:10px;letter-spacing:3px;color:#3a4460;text-transform:uppercase;">DOĞRULANAN HESAP</p>
+            <p style="margin:0 0 28px;font-size:17px;color:#8b97b8;font-weight:500;">{{ user_email }}</p>
+
+            <p style="margin:0 0 32px;font-size:13px;color:#5a6480;line-height:1.8;">
+              Bu kullanıcı e-posta adresini başarıyla doğruladı ve hesabının aktifleştirilmesi için yönetici onayı bekliyor.
+            </p>
+
+            <table cellpadding="0" cellspacing="0" style="margin-bottom:36px;">
+              <tr>
+                <td style="padding-right:14px;">
+                  <a href="{{ approve_url }}" style="display:inline-block;padding:13px 30px;background:linear-gradient(135deg,#0ea5e9,#0077b6);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                    ✓&nbsp;&nbsp;Onayla
+                  </a>
+                </td>
+                <td>
+                  <a href="{{ reject_url }}" style="display:inline-block;padding:13px 30px;background:linear-gradient(135deg,#dc2626,#7f1d1d);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                    ✕&nbsp;&nbsp;Reddet & Sil
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <div style="background:#0b0d17;border:1px solid #1c2136;border-left:3px solid #d97706;border-radius:6px;padding:14px 18px;">
+              <p style="margin:0;font-size:11px;color:#6b7a9a;line-height:1.7;">
+                Bu linkler <strong style="color:#8b97b8;">24 saat</strong> geçerlidir ve tek kullanımlıktır. Şüpheli bir durum söz konusuysa hiçbir butona tıklamayın.
+              </p>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:18px 40px;border-top:1px solid #1c2136;">
+            <p style="margin:0;font-size:10px;color:#2a3048;letter-spacing:2px;text-transform:uppercase;">Volinor Admin Panel &nbsp;·&nbsp; Otomatik Bildirim</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

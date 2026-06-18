@@ -123,6 +123,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@volinor.com')
 SERVER_EMAIL = config('SERVER_EMAIL', default=config('EMAIL_HOST_USER'))
 
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
@@ -132,6 +133,7 @@ REST_AUTH = {
     'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
     'REGISTER_SERIALIZER': 'accounts.serializers.EmailOnlyRegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.CustomPasswordResetSerializer',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER': 'accounts.serializers.CustomPasswordResetConfirmSerializer',
 }
 
 LOGGING = {
