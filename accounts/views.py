@@ -6,10 +6,15 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import get_user_model
 from django.core import signing
-from django.http import HttpResponse
+from django.http import FileResponse, Http404, HttpResponse
 from django.views import View
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from accounts.models import ModelLibrary
+from accounts.serializers import ModelLibrarySerializer
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -80,3 +85,40 @@ class AdminManageUserView(View):
   </div>
 </body>
 </html>""")
+
+
+class ModelLibraryListView(APIView):
+    def get(self, request):
+        qs = ModelLibrary.objects.prefetch_related('images').all()
+        return Response(ModelLibrarySerializer(qs, many=True, context={'request': request}).data)
+
+
+class ModelLibraryDetailView(APIView):
+    def get(self, request, model_id):
+        try:
+            obj = ModelLibrary.objects.prefetch_related('images').get(pk=model_id)
+        except ModelLibrary.DoesNotExist:
+            raise Http404
+        return Response(ModelLibrarySerializer(obj, context={'request': request}).data)
+
+
+class ModelDownloadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, model_id):
+        try:
+            obj = ModelLibrary.objects.get(pk=model_id)
+        except ModelLibrary.DoesNotExist:
+            raise Http404
+
+        if obj.download_file and obj.download_file.storage.exists(obj.download_file.name):
+            file_handle = obj.download_file.open('rb')
+            filename = obj.download_file.name.split('/')[-1]
+            response = FileResponse(file_handle, as_attachment=True)
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+
+        if obj.external_link:
+            return Response({'type': 'external', 'url': obj.external_link})
+
+        raise Http404

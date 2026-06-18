@@ -80,6 +80,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=Csv())
@@ -187,6 +189,7 @@ JAZZMIN_SETTINGS = {
     "hide_models": ["auth.Group"],
     "icons": {
         "auth.User": "fas fa-users-cog",
+        "accounts.ModelLibrary": "fas fa-cubes",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
