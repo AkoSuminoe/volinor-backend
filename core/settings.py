@@ -129,7 +129,30 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
 
 REST_AUTH = {
+    'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
+    'REGISTER_SERIALIZER': 'accounts.serializers.EmailOnlyRegisterSerializer',
     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.CustomPasswordResetSerializer',
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {module}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {'handlers': ['console'], 'level': 'WARNING'},
+        'accounts': {'handlers': ['console'], 'level': 'DEBUG'},
+    },
 }
 
 if not DEBUG:
