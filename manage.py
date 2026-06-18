@@ -15,6 +15,11 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    if 'runserver' in sys.argv:
+        print("\n" + "="*50)
+        print("BACKEND AKTİF! İstekleri dinlemeye hazır...")
+        print("="*50 + "\n")
+        
     execute_from_command_line(sys.argv)
 
 
