@@ -1,5 +1,6 @@
 import logging
 
+from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
@@ -51,6 +52,11 @@ class AdminManageUserView(View):
         if action == "approve":
             user.is_active = True
             user.save(update_fields=["is_active"])
+            EmailAddress.objects.update_or_create(
+                user=user,
+                email=user.email,
+                defaults={"verified": True, "primary": True},
+            )
             return self._page("✅ Onaylandı", f"{user.email} aktifleştirildi ve giriş yapabilir.", "#0ea5e9")
         elif action == "reject":
             email = user.email

@@ -21,16 +21,28 @@ class CustomLoginSerializer(LoginSerializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        if email and password:
-            try:
-                user = User.objects.get(email=email)
-                if user.check_password(password) and not user.is_active:
-                    raise serializers.ValidationError(
-                        {'non_field_errors': ['Hesabınız yönetici onayı beklemektedir.']}
-                    )
-            except User.DoesNotExist:
-                pass
-        return super().validate(attrs)
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError(
+                {'non_field_errors': ['Bu e-posta adresiyle kayıtlı bir hesap bulunamadı.']}
+            )
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(email__iexact=email).order_by('-date_joined').first()
+
+        if not user.check_password(password):
+            raise serializers.ValidationError(
+                {'non_field_errors': ['E-posta veya şifre hatalı.']}
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                {'non_field_errors': ['Hesabınız yönetici onayı beklemektedir.']}
+            )
+
+        attrs['user'] = user
+        return attrs
 
 
 class EmailOnlyRegisterSerializer(RegisterSerializer):

@@ -8,6 +8,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,6 +79,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=Csv())
@@ -164,3 +166,65 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Volinor Command Center",
+    "site_header": "",
+    "site_brand": "",
+    "site_logo": "img/logo_yazi.png",
+    "login_logo": "img/logo_yazi.png",
+    "site_icon": "img/logo_kucuk.png",
+    "welcome_sign": "Kapı Kontrol Merkezine Hoş Geldiniz",
+    "copyright": "Volinor",
+    "search_model": ["auth.User"],
+    "topmenu_links": [
+        {"name": "Siteye Dön", "url": "/", "new_window": True},
+    ],
+    "usermenu_links": [],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": ["sites", "socialaccount", "authtoken"],
+    "hide_models": ["auth.Group"],
+    "icons": {
+        "auth.User": "fas fa-users-cog",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": False,
+    "use_google_fonts_cdn": False,
+    "show_ui_builder": False,
+    "changeform_format": "horizontal_tabs",
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "theme": "darkly",
+    "default_theme_mode": "dark",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+    "actions_sticky_top": True,
+}
