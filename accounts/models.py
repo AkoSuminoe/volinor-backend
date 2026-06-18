@@ -27,3 +27,19 @@ class ModelImage(models.Model):
     class Meta:
         verbose_name = 'Galeri Resmi'
         verbose_name_plural = 'Galeri Resimleri'
+
+
+class Video(models.Model):
+    id = models.CharField(max_length=255, primary_key=True, help_text="YouTube Video ID")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    thumbnail_url = models.URLField(max_length=500)
+    published_at = models.DateTimeField()
+
+    class Meta:
+        ordering = ['-published_at']
+        verbose_name = 'Video'
+        verbose_name_plural = 'Videolar'
+
+    def __str__(self):
+        return self.title

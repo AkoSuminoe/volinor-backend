@@ -9,12 +9,12 @@ from django.core import signing
 from django.http import FileResponse, Http404, HttpResponse
 from django.views import View
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import ModelLibrary
-from accounts.serializers import ModelLibrarySerializer
+from accounts.models import ModelLibrary, Video
+from accounts.serializers import ModelLibrarySerializer, VideoSerializer
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -122,3 +122,11 @@ class ModelDownloadView(APIView):
             return Response({'type': 'external', 'url': obj.external_link})
 
         raise Http404
+
+
+class VideoListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        qs = Video.objects.all()
+        return Response(VideoSerializer(qs, many=True).data)

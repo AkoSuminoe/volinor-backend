@@ -3,9 +3,10 @@ from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.http import HttpResponseRedirect
 from django.utils.html import format_html, mark_safe
 
-from accounts.models import ModelImage, ModelLibrary
+from accounts.models import ModelImage, ModelLibrary, Video
 
 User = get_user_model()
 
@@ -146,3 +147,37 @@ class ModelLibraryAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="/api/models/{}/download/" target="_blank">⬇ İndir</a>', obj.pk
         )
+
+
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
+    change_list_template = "admin/accounts/video/change_list.html"
+    list_display = ('title', 'id', 'published_at', 'thumbnail_preview')
+    search_fields = ('title', 'id')
+    ordering = ('-published_at',)
+    readonly_fields = ('thumbnail_preview',)
+
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom_urls = [
+            path('fetch-videos/', self.admin_site.admin_view(self.fetch_videos_view), name='fetch_youtube_videos'),
+        ]
+        return custom_urls + urls
+
+    def fetch_videos_view(self, request):
+        from django.core.management import call_command
+        from django.contrib import messages
+        try:
+            call_command('fetch_youtube_videos')
+            self.message_user(request, "YouTube videoları başarıyla kontrol edildi ve veritabanı güncellendi.", messages.SUCCESS)
+        except Exception as e:
+            self.message_user(request, f"YouTube videoları çekilirken hata oluştu: {str(e)}", messages.ERROR)
+        
+        return HttpResponseRedirect("../")
+
+    @admin.display(description='Önizleme')
+    def thumbnail_preview(self, obj):
+        if obj.thumbnail_url:
+            return format_html('<img src="{}" style="height:60px;border-radius:4px;">', obj.thumbnail_url)
+        return '—'

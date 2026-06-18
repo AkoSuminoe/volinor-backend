@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path, include
 
-from accounts.views import AdminManageUserView, GoogleLogin, ModelDownloadView, ModelLibraryDetailView, ModelLibraryListView
+from accounts.views import AdminManageUserView, GoogleLogin, ModelDownloadView, ModelLibraryDetailView, ModelLibraryListView, VideoListView
 from core.views import send_email_view
 
 
@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/models/', ModelLibraryListView.as_view(), name='model_list'),
     path('api/models/<uuid:model_id>/', ModelLibraryDetailView.as_view(), name='model_detail'),
     path('api/models/<uuid:model_id>/download/', ModelDownloadView.as_view(), name='model_download'),
+    path('api/videos/', VideoListView.as_view(), name='video_list'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

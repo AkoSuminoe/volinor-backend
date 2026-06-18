@@ -1,0 +1,10 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <li>
+        <a href="fetch-videos/" class="btn btn-danger" style="background-color: #e62117; color: white; border-color: #e62117; padding: 4px 12px; margin-left: 10px; border-radius: 4px; font-size: 0.875rem;">
+            <i class="fab fa-youtube"></i> YouTube'u Şimdi Kontrol Et
+        </a>
+    </li>
+{% endblock %}

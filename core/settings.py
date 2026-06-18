@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'accounts',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -190,6 +191,7 @@ JAZZMIN_SETTINGS = {
     "icons": {
         "auth.User": "fas fa-users-cog",
         "accounts.ModelLibrary": "fas fa-cubes",
+        "accounts.Video": "fab fa-youtube",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",

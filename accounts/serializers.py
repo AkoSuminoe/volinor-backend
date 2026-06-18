@@ -4,7 +4,7 @@ import threading
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from accounts.models import ModelLibrary
+from accounts.models import ModelLibrary, Video
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
@@ -135,3 +135,9 @@ class ModelLibrarySerializer(serializers.ModelSerializer):
 
     def get_has_download(self, obj):
         return bool(obj.download_file or obj.external_link)
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = ['id', 'title', 'description', 'thumbnail_url', 'published_at']
