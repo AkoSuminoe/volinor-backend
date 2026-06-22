@@ -154,6 +154,9 @@ SERVER_EMAIL = config('SERVER_EMAIL', default=config('EMAIL_HOST_USER'))
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 BACKEND_URL = config('BACKEND_URL', default='http://localhost:8000')
 
+YOUTUBE_API_KEY = config('YOUTUBE_API_KEY', default='')
+YOUTUBE_CHANNEL_ID = config('YOUTUBE_CHANNEL_ID', default='')
+
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True

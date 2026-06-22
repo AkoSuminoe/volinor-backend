@@ -1,17 +1,20 @@
 import json
+import sys
 import urllib.request
 import urllib.error
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from accounts.models import Video
-from decouple import config
-from datetime import datetime
 
 class Command(BaseCommand):
     help = 'Fetches latest videos from YouTube channel and updates the database'
 
     def handle(self, *args, **options):
-        api_key = config('YOUTUBE_API_KEY', default='')
-        channel_id = config('YOUTUBE_CHANNEL_ID', default='')
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+
+        api_key = settings.YOUTUBE_API_KEY
+        channel_id = settings.YOUTUBE_CHANNEL_ID
 
         if not api_key or not channel_id:
             self.stderr.write(self.style.ERROR('YOUTUBE_API_KEY or YOUTUBE_CHANNEL_ID is not set in .env'))
