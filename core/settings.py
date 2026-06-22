@@ -85,9 +85,26 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=Csv())
+_CORS_ENV = config('CORS_ALLOWED_ORIGINS', default='', cast=Csv())
+CORS_ALLOWED_ORIGINS = list({
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    *_CORS_ENV,
+})
+
+_CSRF_ENV = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+CSRF_TRUSTED_ORIGINS = list({
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    *_CSRF_ENV,
+})
+
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
+CORS_ALLOW_ALL_ORIGINS = False
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -95,7 +112,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-SITE_ID = 1
+SITE_ID = 2
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'

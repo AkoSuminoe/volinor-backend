@@ -1,13 +1,17 @@
 import logging
+import threading
 
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core import signing
+from django.core.mail import EmailMultiAlternatives
 from django.http import FileResponse, Http404, HttpResponse
+from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.views import View
@@ -65,6 +69,22 @@ class AdminManageUserView(View):
                 email=user.email,
                 defaults={"verified": True, "primary": True},
             )
+
+            def _send():
+                try:
+                    html = render_to_string("emails/user_approved.html", {"user": user})
+                    msg = EmailMultiAlternatives(
+                        subject="Volinor - Hesabınız Onaylandı",
+                        body=f"Hesabınız onaylandı. Giriş yapın: {settings.FRONTEND_URL}",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[user.email],
+                    )
+                    msg.attach_alternative(html, "text/html")
+                    msg.send()
+                except Exception as exc:
+                    logger.error("Approval notification email failed | user=%s error=%s", user.email, exc)
+
+            threading.Thread(target=_send, daemon=True).start()
             return self._page("✅ Onaylandı", f"{user.email} aktifleştirildi ve giriş yapabilir.", "#0ea5e9")
         elif action == "reject":
             email = user.email
@@ -109,6 +129,22 @@ class AdminQuickApprovalView(View):
                 email=user.email,
                 defaults={"verified": True, "primary": True},
             )
+
+            def _send():
+                try:
+                    html = render_to_string("emails/user_approved.html", {"user": user})
+                    msg = EmailMultiAlternatives(
+                        subject="Volinor - Hesabınız Onaylandı",
+                        body=f"Hesabınız onaylandı. Giriş yapın: {settings.FRONTEND_URL}",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[user.email],
+                    )
+                    msg.attach_alternative(html, "text/html")
+                    msg.send()
+                except Exception as exc:
+                    logger.error("Approval notification email failed | user=%s error=%s", user.email, exc)
+
+            threading.Thread(target=_send, daemon=True).start()
             return self._page("✅ Onaylandı", f"{user.email} aktifleştirildi.", "#22c55e")
 
         if action == "reject":
