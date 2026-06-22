@@ -5,7 +5,8 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import mail_admins
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework.exceptions import PermissionDenied
@@ -46,13 +47,29 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         user = super().save_user(request, sociallogin, form)
         user.is_active = False
         user.save(update_fields=["is_active"])
-        threading.Thread(
-            target=mail_admins,
-            args=(
-                "New user pending approval",
-                f"User {user.email} has registered and is awaiting activation.",
-            ),
-            kwargs={"fail_silently": True},
-            daemon=True,
-        ).start()
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+        base = settings.BACKEND_URL
+        approve_url = f"{base}/api/auth/approval/{uid}/{token}/approve/"
+        reject_url = f"{base}/api/auth/approval/{uid}/{token}/reject/"
+
+        ctx = {"user": user, "approve_url": approve_url, "reject_url": reject_url}
+        html = render_to_string("emails/admin_approval.html", ctx)
+
+        def _send():
+            try:
+                for _, addr in settings.ADMINS:
+                    msg = EmailMultiAlternatives(
+                        subject="[Volinor] Google ile Yeni Kayıt — Onay Bekliyor",
+                        body=approve_url,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[addr],
+                    )
+                    msg.attach_alternative(html, "text/html")
+                    msg.send()
+            except Exception as exc:
+                logger.error("Social approval email failed | user=%s error=%s", user.email, exc)
+
+        threading.Thread(target=_send, daemon=True).start()
         return user
