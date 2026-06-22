@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html, mark_safe
+from modeltranslation.admin import TranslationAdmin
 
 from accounts.models import Certificate, ModelImage, ModelLibrary, Video
 
@@ -184,6 +185,6 @@ class VideoAdmin(admin.ModelAdmin):
 
 
 @admin.register(Certificate)
-class CertificateAdmin(admin.ModelAdmin):
+class CertificateAdmin(TranslationAdmin):
     list_display = ('name', 'issued_by', 'issue_date', 'is_active')
     list_filter = ('is_active',)
