@@ -5,14 +5,13 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from accounts.models import ModelLibrary, Video
-from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from dj_rest_auth.serializers import LoginSerializer, PasswordResetConfirmSerializer, PasswordResetSerializer
+from dj_rest_auth.serializers import LoginSerializer, PasswordResetSerializer
 from rest_framework import serializers
 
 logger = logging.getLogger(__name__)
@@ -94,11 +93,16 @@ class CustomPasswordResetSerializer(PasswordResetSerializer):
         threading.Thread(target=_send, daemon=True).start()
 
 
-class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
+class CustomPasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password1 = serializers.CharField(write_only=True)
+    new_password2 = serializers.CharField(write_only=True)
+
     def validate(self, attrs):
         try:
-            uid = force_str(urlsafe_base64_decode(attrs['uid']))
-            self.user = User.objects.get(pk=uid)
+            pk = force_str(urlsafe_base64_decode(attrs['uid']))
+            self.user = User.objects.get(pk=pk)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({'uid': ['Geçersiz veya süresi dolmuş bağlantı.']})
 
@@ -107,14 +111,15 @@ class CustomPasswordResetConfirmSerializer(PasswordResetConfirmSerializer):
                 {'token': ['Bu şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş.']}
             )
 
-        self.set_password_form = SetPasswordForm(user=self.user, data=attrs)
-        if not self.set_password_form.is_valid():
-            raise serializers.ValidationError(self.set_password_form.errors)
+        if attrs['new_password1'] != attrs['new_password2']:
+            raise serializers.ValidationError({'new_password2': ['Şifreler eşleşmiyor.']})
 
+        self.new_password = attrs['new_password1']
         return attrs
 
     def save(self):
-        self.set_password_form.save()
+        self.user.set_password(self.new_password)
+        self.user.save()
 
 
 class ModelLibrarySerializer(serializers.ModelSerializer):
