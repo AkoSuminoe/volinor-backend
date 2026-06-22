@@ -87,6 +87,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173', cast=Csv())
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -192,6 +193,7 @@ JAZZMIN_SETTINGS = {
         "auth.User": "fas fa-users-cog",
         "accounts.ModelLibrary": "fas fa-cubes",
         "accounts.Video": "fab fa-youtube",
+        "accounts.Certificate": "fas fa-certificate",
     },
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",

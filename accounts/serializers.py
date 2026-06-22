@@ -4,7 +4,7 @@ import threading
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from accounts.models import ModelLibrary, Video
+from accounts.models import Certificate, ModelLibrary, Video
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -120,6 +120,12 @@ class CustomPasswordResetConfirmSerializer(serializers.Serializer):
     def save(self):
         self.user.set_password(self.new_password)
         self.user.save()
+
+
+class CertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Certificate
+        fields = ['id', 'name', 'issued_by', 'issue_date', 'document', 'verification_link']
 
 
 class ModelLibrarySerializer(serializers.ModelSerializer):

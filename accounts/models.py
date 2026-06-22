@@ -43,3 +43,20 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Certificate(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Sertifika Adı')
+    issued_by = models.CharField(max_length=255, verbose_name='Veren Kurum')
+    issue_date = models.DateField(verbose_name='Veriliş Tarihi')
+    document = models.FileField(upload_to='certificates/', verbose_name='Belge / Görsel')
+    verification_link = models.URLField(blank=True, null=True, verbose_name='Doğrulama Linki')
+    is_active = models.BooleanField(default=True, verbose_name='Sitede Görünür')
+
+    class Meta:
+        ordering = ['-issue_date']
+        verbose_name = 'Sertifika'
+        verbose_name_plural = 'Sertifikalar'
+
+    def __str__(self):
+        return self.name

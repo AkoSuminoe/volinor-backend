@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html, mark_safe
 
-from accounts.models import ModelImage, ModelLibrary, Video
+from accounts.models import Certificate, ModelImage, ModelLibrary, Video
 
 User = get_user_model()
 
@@ -181,3 +181,9 @@ class VideoAdmin(admin.ModelAdmin):
         if obj.thumbnail_url:
             return format_html('<img src="{}" style="height:60px;border-radius:4px;">', obj.thumbnail_url)
         return '—'
+
+
+@admin.register(Certificate)
+class CertificateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'issued_by', 'issue_date', 'is_active')
+    list_filter = ('is_active',)

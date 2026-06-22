@@ -16,8 +16,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import ModelLibrary, Video
-from accounts.serializers import ModelLibrarySerializer, VideoSerializer
+from accounts.models import Certificate, ModelLibrary, Video
+from accounts.serializers import CertificateSerializer, ModelLibrarySerializer, VideoSerializer
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -178,3 +178,11 @@ class VideoListView(APIView):
     def get(self, request):
         qs = Video.objects.all()
         return Response(VideoSerializer(qs, many=True).data)
+
+
+class CertificateListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        qs = Certificate.objects.filter(is_active=True)
+        return Response(CertificateSerializer(qs, many=True, context={'request': request}).data)
