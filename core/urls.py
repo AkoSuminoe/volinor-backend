@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/models/<uuid:model_id>/download/', ModelDownloadView.as_view(), name='model_download'),
     path('api/videos/', VideoListView.as_view(), name='video_list'),
     path('api/certificates/', CertificateListView.as_view(), name='certificate_list'),
+    path('api/products/', include('products.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
