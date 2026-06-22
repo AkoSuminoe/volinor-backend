@@ -30,6 +30,10 @@ class Command(BaseCommand):
             req = urllib.request.Request(url)
             with urllib.request.urlopen(req) as response:
                 data = json.loads(response.read().decode())
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode()
+            self.stderr.write(self.style.ERROR(f'YouTube API request failed: {e}\nDetails: {error_body}'))
+            return
         except urllib.error.URLError as e:
             self.stderr.write(self.style.ERROR(f'YouTube API request failed: {e}'))
             return
